@@ -1,8 +1,11 @@
 package com.example.seminar_4;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class Sarpe implements Serializable {
+public class Sarpe implements Parcelable {
 
     private String specie;
     private String lungime_medie;
@@ -22,6 +25,38 @@ public class Sarpe implements Serializable {
         this.culoare = "";
         this.veninos = false;
     }
+
+    protected Sarpe(Parcel in) {
+        specie = in.readString();
+        lungime_medie = in.readString();
+        culoare = in.readString();
+        veninos = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(specie);
+        dest.writeString(lungime_medie);
+        dest.writeString(culoare);
+        dest.writeByte((byte) (veninos ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Sarpe> CREATOR = new Creator<Sarpe>() {
+        @Override
+        public Sarpe createFromParcel(Parcel in) {
+            return new Sarpe(in);
+        }
+
+        @Override
+        public Sarpe[] newArray(int size) {
+            return new Sarpe[size];
+        }
+    };
 
     public String getSpecie() {
         return specie;
