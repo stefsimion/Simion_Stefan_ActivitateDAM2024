@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        serpi = new ArrayList<>();
+
         Button btn = findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -26,6 +26,21 @@ public class Formular_adaugare extends AppCompatActivity {
             return insets;
         });
 
+        Intent it = getIntent();
+        if(it.hasExtra("sarpe")){
+            Sarpe s = it.getParcelableExtra("sarpe");
+            EditText specieEt=findViewById(R.id.specie);
+            EditText lungimeEt = findViewById(R.id.lungime);
+            EditText culoareEt = findViewById(R.id.culoare);
+            CheckBox veninosCb = findViewById(R.id.checkBox);
+
+            specieEt.setText(s.getSpecie());
+            lungimeEt.setText(s.getLungime_medie());
+            culoareEt.setText(s.getCuloare());
+            veninosCb.setChecked(s.isVeninos());
+
+        }
+
         Button btnAdaugare = findViewById(R.id.button2);
         btnAdaugare.setOnClickListener(new View.OnClickListener() {
             @Override
