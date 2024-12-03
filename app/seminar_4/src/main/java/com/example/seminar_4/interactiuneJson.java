@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,18 +18,23 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class interactiuneJson extends AppCompatActivity {
+    private List<Situatie> ListaSituatiiDisciplina = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,47 +47,69 @@ public class interactiuneJson extends AppCompatActivity {
             return insets;
         });
 
-        Executor executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.myLooper());
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection con = null;
-                String keyOras = "";
-                try {
-                    URL url = new URL("http://dataservice.accuweather.com/locations/v1/cities/search?apikey=t32wDz2Y2GTqGmHtJ7A95kCO2d6N5sXK&q=Bucuresti");
-                    con = (HttpURLConnection) url.openConnection();
-                    InputStream is = con.getInputStream();
+        Button bt = findViewById(R.id.buttonSit);
 
-                    StringBuilder builder = new StringBuilder();
-                    int ch;
-                    while ((ch = is.read()) != -1) {
-                        builder.append((char) ch);
+        ListaSituatiiDisciplina = new ArrayList<>();
+
+
+        bt.setOnClickListener((View view) ->{
+
+            Executor executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.myLooper());
+
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    HttpURLConnection connection = null;
+                    try {
+                        URL url = new URL("https://pdm.ase.ro/situatii.json");
+                        connection = (HttpURLConnection) url.openConnection();
+                        InputStream is = connection.getInputStream();
+                        InputStreamReader inputStreamReader = new InputStreamReader(is);
+
+                        BufferedReader buffer = new BufferedReader(inputStreamReader);
+                        StringBuilder sb = new StringBuilder();
+
+                        String line = null;
+                        while((line = buffer.readLine()) != null){
+                            sb.append(line);
+                        }
+
+                        JSONObject jsonObject = new JSONObject(sb.toString());
+                        JSONArray ArrayObiecte = jsonObject.getJSONArray("situatii");
+
+                        for(int i=0; i< 4; i++) {
+                            JSONObject situatie = ArrayObiecte.getJSONObject(i);
+
+                            String disciplina = situatie.getString("disciplina");
+                            String activitate = situatie.getString("activitate");
+                            int valoare = situatie.getInt("valoare");
+                            double pondere = situatie.getDouble("pondere");
+                            String data = situatie.getString("data");
+                            String descriere = situatie.getString("descriere");
+
+                            ListaSituatiiDisciplina.add(new Situatie(disciplina, activitate, valoare, pondere, data, descriere));
+                        }
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
                     }
-                    String jsonResponse = builder.toString();
 
-                    JSONArray vector = new JSONArray(jsonResponse);
-                    JSONObject object = vector.getJSONObject(0);
-                    keyOras = object.getString("Key");
-
-                } catch (Exception e) {
-                    Log.e("Error", "Eroare la procesarea API-ului: " + e.getMessage());
-                } finally {
-                    if (con != null) {
-                        con.disconnect();
-                    }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ListView lv = findViewById(R.id.listviewSit);
+                            ArrayAdapter<Situatie> adapter = new ArrayAdapter<>(getApplicationContext(),
+                                    android.R.layout.simple_list_item_1, ListaSituatiiDisciplina);
+                            lv.setAdapter(adapter);
+                        }
+                    });
                 }
-
-                String finalKeyOras = keyOras;
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-//                        TextView textView = findViewById(R.id.textViewOras);
-                       // textView.setText("Cheie Oras: " + finalKeyOras);
-                    }
-                });
-            }
+            });
         });
     }
 
