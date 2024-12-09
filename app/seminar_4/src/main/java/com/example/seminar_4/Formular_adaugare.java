@@ -12,8 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class Formular_adaugare extends AppCompatActivity {
+
+    private SerpiDataBase database = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +32,9 @@ public class Formular_adaugare extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        database  = Room.databaseBuilder(this, SerpiDataBase.class, "SerpiDB").build();
+
 
         Intent it = getIntent();
         if(it.hasExtra("sarpe")){
@@ -58,6 +68,14 @@ public class Formular_adaugare extends AppCompatActivity {
                 boolean veninos = cbVenin.isChecked();
 
                 Sarpe s = new Sarpe(specie, lungime, culoare, veninos);
+
+                Executor executor = Executors.newSingleThreadExecutor();
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        database.getSerpiDAO().insertSarpe(s);
+                    }
+                });
 
                 Intent it = new Intent();
                 it.putExtra("sarpe",s);

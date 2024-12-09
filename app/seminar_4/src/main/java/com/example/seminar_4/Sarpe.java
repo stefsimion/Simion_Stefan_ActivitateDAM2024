@@ -3,9 +3,16 @@ package com.example.seminar_4;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity(tableName = "Serpi")
 public class Sarpe implements Parcelable {
+    @PrimaryKey
+    @NonNull
 
     private String specie;
     private String lungime_medie;
@@ -58,6 +65,7 @@ public class Sarpe implements Parcelable {
         }
     };
 
+
     public String getSpecie() {
         return specie;
     }
@@ -88,6 +96,14 @@ public class Sarpe implements Parcelable {
 
     public void setVeninos(boolean veninos) {
         this.veninos = veninos;
+    }
+
+    public String getKey() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.specie);
+        sb.append(".");
+        sb.append(this.culoare);
+        return sb.toString();
     }
 
     @Override
