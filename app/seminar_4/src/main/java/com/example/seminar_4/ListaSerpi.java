@@ -89,7 +89,7 @@ public class ListaSerpi extends AppCompatActivity {
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int i, long id) {
-                SharedPreferences sp = getSharedPreferences("serpiObiecte",MODE_PRIVATE);
+                SharedPreferences sp = getSharedPreferences("serpiObiecteFav",MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString(serpi.get(i).getKey(), serpi.get(i).toString());
                 editor.commit();

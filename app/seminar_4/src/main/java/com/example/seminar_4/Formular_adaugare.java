@@ -15,6 +15,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -73,6 +78,22 @@ public class Formular_adaugare extends AppCompatActivity {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
+                        try{
+                            FileOutputStream file;
+                            file = openFileOutput("obiecteFavorite.txt", MODE_PRIVATE);
+                            OutputStreamWriter output = new OutputStreamWriter(file);
+                            BufferedWriter writer = new BufferedWriter(output);
+                            writer.write(s.toString());
+                            writer.close();
+                            output.close();
+                            file.close();
+
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
                         database.getSerpiDAO().insertSarpe(s);
                     }
                 });
