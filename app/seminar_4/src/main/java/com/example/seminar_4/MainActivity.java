@@ -81,6 +81,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button btnFire = findViewById(R.id.btntest);
+        btnFire.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent it = new Intent(getApplicationContext(), FireBase.class);
+                startActivity(it);
+            }
+        });
+
 
     }
 

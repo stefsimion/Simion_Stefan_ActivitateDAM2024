@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Seminar_2">
         <activity
+            android:name=".FireBase"
+            android:exported="false" />
+        <activity
             android:name=".MainActivityFavorite"
             android:exported="false" />
         <activity

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -26,6 +33,8 @@ import java.util.concurrent.Executors;
 public class Formular_adaugare extends AppCompatActivity {
 
     private SerpiDataBase database = null;
+    private DatabaseReference databaseReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +47,9 @@ public class Formular_adaugare extends AppCompatActivity {
             return insets;
         });
 
+        FirebaseApp.initializeApp(this);
         database  = Room.databaseBuilder(this, SerpiDataBase.class, "SerpiDB").build();
-
+        databaseReference = FirebaseDatabase.getInstance().getReference("components");
 
         Intent it = getIntent();
         if(it.hasExtra("sarpe")){
@@ -97,6 +107,22 @@ public class Formular_adaugare extends AppCompatActivity {
                         database.getSerpiDAO().insertSarpe(s);
                     }
                 });
+
+                CheckBox cbOnline = findViewById(R.id.checkBoxFire);
+                if (cbOnline.isChecked()) {
+                    databaseReference.push().setValue(s)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(Formular_adaugare.this, "Componenta salvată cu succes în Firebase", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(Formular_adaugare.this, "Eroare la salvarea în Firebase: " + task.getException().getMessage(),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                }
 
                 Intent it = new Intent();
                 it.putExtra("sarpe",s);

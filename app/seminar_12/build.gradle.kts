@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
-    namespace = "com.example.seminar_4"
+    namespace = "com.example.seminar_12"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.seminar_4"
+        applicationId = "com.example.seminar_12"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
@@ -34,14 +33,7 @@ android {
 
 dependencies {
 
-    implementation(libs.firebase.database)
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-
     implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
